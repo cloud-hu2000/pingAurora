@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Subscriber {
+  id                String    @id @default(cuid())
+  email             String?   @unique
+  telegramId        String?   @unique
+  latitude          Float
+  longitude         Float
+  locationName      String
+  kpThreshold       Float     @default(6.0)
+  clearSkyMin       Float     @default(70.0)
+  isActive          Boolean   @default(false)
+  verifyToken       String?   @unique
+  unsubscribeToken  String    @unique
+  telegramFirstName String?
+  telegramUsername  String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  alerts            AlertLog[]
+
+  @@index([isActive])
+  @@index([telegramId])
+}
+
+model AlertLog {
+  id           String    @id @default(cuid())
+  subscriberId String
+  subscriber   Subscriber @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+  kpValue      Float
+  clearSky     Float
+  sentAt       DateTime  @default(now())
+  channel      String
+  status       String
+
+  @@index([subscriberId, sentAt])
+}

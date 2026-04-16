@@ -1,0 +1,10 @@
+feat: init pingAurora aurora notification platform
+
+- Minimal UX: one-sentence homepage, zero charts
+- NOAA KP index fetching (updated every minute)
+- Open-Meteo clear sky forecast (no API key needed)
+- Email + Telegram Bot notifications
+- Prisma + PostgreSQL data model
+- Vercel Cron job every 10 minutes
+- 26 preset cities with lat/lng
+- Dark aurora theme with Tailwind CSS
