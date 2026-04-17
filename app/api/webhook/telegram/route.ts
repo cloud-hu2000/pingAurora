@@ -115,11 +115,7 @@ async function handleCitySubscription(
     shanghai: { lat: 31.2304, lng: 121.4737, name: "Shanghai" },
     shenzhen: { lat: 22.5431, lng: 114.0579, name: "Shenzhen" },
     guangzhou: { lat: 23.1291, lng: 113.2644, name: "Guangzhou" },
-    "hong kong": { lat: 22.3193, lng: 114.1694, name: "Hong Kong" },
     taipei: { lat: 25.033, lng: 121.5654, name: "Taipei" },
-    "los angeles": { lat: 34.0522, lng: -118.2437, name: "Los Angeles" },
-    "new york city": { lat: 40.7128, lng: -74.006, name: "New York" },
-    // Deduplicate
   };
 
   // Remove duplicates by lat/lng
