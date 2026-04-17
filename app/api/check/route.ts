@@ -1,16 +1,16 @@
 /**
- * GET/POST /api/check - Vercel Cron 定时触发极光检查
- * 由 vercel.json 配置每10分钟执行
+ * GET/POST /api/check - Vercel Cron triggers aurora check
+ * Configured in vercel.json to run every 10 minutes
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { checkAndNotify } from "@/lib/scheduler";
 
-// Vercel Cron 会设置 CRON_SECRET，可选验证
+// Vercel Cron sets CRON_SECRET, optional verification
 const CRON_SECRET = process.env.CRON_SECRET;
 
 export async function GET(req: NextRequest) {
-  // 验证来源（防止恶意触发）
+  // Verify source (prevent malicious triggers)
   if (CRON_SECRET) {
     const authHeader = req.headers.get("authorization");
     if (authHeader !== `Bearer ${CRON_SECRET}`) {

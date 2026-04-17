@@ -1,5 +1,5 @@
 /**
- * Telegram Bot 通知模块
+ * Telegram Bot Notification Module
  */
 
 import TelegramBot from "node-telegram-bot-api";
@@ -22,7 +22,7 @@ export interface TelegramAlertParams {
 }
 
 /**
- * 发送极光警报 Telegram 消息
+ * Send aurora alert Telegram message
  */
 export async function sendTelegramAlert(
   params: TelegramAlertParams
@@ -35,19 +35,19 @@ export async function sendTelegramAlert(
   const { chatId, locationName, kpValue, clearSky, unsubscribeToken } = params;
   const unsubscribeUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/unsubscribe?token=${unsubscribeToken}`;
 
-  const kpLevel = kpValue >= 7 ? "超强" : kpValue >= 5 ? "强" : "中等";
+  const kpLevel = kpValue >= 7 ? "Extreme" : kpValue >= 5 ? "Strong" : "Moderate";
 
-  const msg = `🌌 *极光警报！*
+  const msg = `🌌 *Aurora Alert!*
 
 📍 ${locationName}
-今晚有机会看到极光！
+Tonight you have a chance to see the aurora!
 
-活跃度: ${kpValue.toFixed(1)}/9 · ${kpLevel}
-晴朗度: ${clearSky.toFixed(0)}%
+Activity: ${kpValue.toFixed(1)}/9 · ${kpLevel}
+Clear Sky: ${clearSky.toFixed(0)}%
 
-*出发吧 🚀*
+*Time to head out 🚀*
 
-[退订通知](${unsubscribeUrl})`;
+[Unsubscribe](${unsubscribeUrl})`;
 
   if (!bot) {
     console.warn("[Telegram] Bot not initialized");
@@ -61,7 +61,7 @@ export async function sendTelegramAlert(
 }
 
 /**
- * 发送 Telegram 欢迎/确认消息
+ * Send Telegram welcome/confirmation message
  */
 export async function sendTelegramWelcome(
   chatId: string,
@@ -71,21 +71,21 @@ export async function sendTelegramWelcome(
 
   await bot.sendMessage(
     chatId,
-    `🌌 *pingAurora 已订阅！*
+    `🌌 *pingAurora Subscribed!*
 
 📍 ${locationName}
-极光活跃度阈值: 6/9
-晴朗度阈值: 70%
+Aurora Activity Threshold: 6/9
+Clear Sky Threshold: 70%
 
-今晚有机会时，我会第一时间通知你 🚀
+We&apos;ll notify you when conditions are right 🚀
 
-/unsubscribe 退订`,
+/unsubscribe to unsubscribe`,
     { parse_mode: "Markdown" }
   );
 }
 
 /**
- * 设置 Webhook（Vercel 环境）
+ * Set Webhook (Vercel environment)
  */
 export async function setTelegramWebhook(
   webhookUrl: string
@@ -95,7 +95,7 @@ export async function setTelegramWebhook(
 }
 
 /**
- * 发送 Telegram 验证消息
+ * Send Telegram verification code
  */
 export async function sendTelegramVerification(
   chatId: string,
@@ -104,7 +104,7 @@ export async function sendTelegramVerification(
   if (!isConfigured || !bot) return;
   await bot.sendMessage(
     chatId,
-    `🔐 验证码: *${verifyCode}*\n\n请在网页上输入此验证码完成订阅。`,
+    `🔐 Verification Code: *${verifyCode}*\n\nEnter this code on the website to complete your subscription.`,
     { parse_mode: "Markdown" }
   );
 }

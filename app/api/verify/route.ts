@@ -1,5 +1,5 @@
 /**
- * POST /api/verify - 邮箱验证激活订阅
+ * POST /api/verify - Email verification to activate subscription
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token");
 
   if (!token) {
-    return NextResponse.json({ error: "缺少验证 token" }, { status: 400 });
+    return NextResponse.json({ error: "Verification token missing" }, { status: 400 });
   }
 
   const subscriber = await prisma.subscriber.findUnique({
@@ -17,13 +17,13 @@ export async function GET(req: NextRequest) {
   });
 
   if (!subscriber) {
-    return NextResponse.json({ error: "无效的验证链接" }, { status: 404 });
+    return NextResponse.json({ error: "Invalid verification link" }, { status: 404 });
   }
 
   if (subscriber.isActive) {
     return NextResponse.json({
       success: true,
-      message: "订阅已激活，无需重复验证",
+      message: "Already activated, no need to verify again",
       alreadyActive: true,
     });
   }
@@ -35,6 +35,6 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     success: true,
-    message: "订阅已激活！极光活跃时我们会第一时间通知你 🌌",
+    message: "Activated! We&apos;ll notify you the moment aurora conditions are right 🌌",
   });
 }

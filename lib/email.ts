@@ -1,6 +1,6 @@
 /**
- * AWS SES 邮件发送模块
- * 区域: us-east-1
+ * AWS SES Email Module
+ * Region: us-east-1
  */
 
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
@@ -25,7 +25,7 @@ export interface SendEmailParams {
 }
 
 /**
- * 发送极光警报邮件
+ * Send aurora alert email
  */
 export async function sendAuroraAlertEmail(
   to: string,
@@ -36,10 +36,10 @@ export async function sendAuroraAlertEmail(
 ): Promise<void> {
   const unsubscribeUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/unsubscribe?token=${unsubscribeToken}`;
 
-  const subject = `🌌 极光警报！今晚 ${locationName} 有机会`;
+  const subject = `🌌 Aurora Alert! Tonight in ${locationName}`;
 
   const kpLevel = getKpLevel(kpValue);
-  const kpDesc = kpValue >= 7 ? "超强" : kpValue >= 5 ? "强" : "中等";
+  const kpDesc = kpValue >= 7 ? "Extreme" : kpValue >= 5 ? "Strong" : "Moderate";
 
   const html = `
 <!DOCTYPE html>
@@ -68,42 +68,42 @@ export async function sendAuroraAlertEmail(
   <div class="container">
     <div class="header">
       <div class="title">🌌 pingAurora</div>
-      <div class="subtitle">极光实时通知服务</div>
+      <div class="subtitle">Real-time Aurora Notification Service</div>
     </div>
     <div class="card">
-      <div class="alert-title">🌌 极光警报！今晚有机会！</div>
+      <div class="alert-title">🌌 Aurora Alert! Tonight you have a chance!</div>
       <div class="location">📍 ${locationName}</div>
       <div class="stat-row">
-        <span class="stat-label">极光活跃度</span>
-        <span class="stat-value">${kpValue.toFixed(1)} / 9 · ${kpDesc}</span>
+        <span class="stat-label">Aurora Activity</span>
+        <span class="stat-value">${kpValue.toFixed(1)}/9 · ${kpDesc}</span>
       </div>
       <div class="stat-row">
-        <span class="stat-label">今晚晴朗度</span>
+        <span class="stat-label">Tonight&apos;s Clear Sky</span>
         <span class="stat-value">${clearSky.toFixed(0)}%</span>
       </div>
       <div class="stat-row">
-        <span class="stat-label">适合观看时段</span>
-        <span class="stat-value">今晚 18:00 - 明早 06:00</span>
+        <span class="stat-label">Best Viewing Hours</span>
+        <span class="stat-value">6 PM - 6 AM</span>
       </div>
     </div>
     <div class="cta">
-      <a href="${unsubscribeUrl}" class="cta-btn">查看详情 & 出发路线 →</a>
+      <a href="${unsubscribeUrl}" class="cta-btn">View Details & Get Directions →</a>
     </div>
     <div class="footer">
-      不想再收到通知？<a href="${unsubscribeUrl}">一键退订</a>
+      Don&apos;t want notifications anymore? <a href="${unsubscribeUrl}">Unsubscribe</a>
     </div>
   </div>
 </body>
 </html>
   `.trim();
 
-  const text = `🌌 极光警报！今晚 ${locationName} 有机会看到极光！
+  const text = `🌌 Aurora Alert! Tonight ${locationName} has a chance to see the aurora!
 
-当前活跃度: ${kpValue.toFixed(1)}/9 (${kpDesc})
-今晚晴朗度: ${clearSky.toFixed(0)}%
-适合观看时段: 今晚 18:00 - 明早 06:00
+Current Activity: ${kpValue.toFixed(1)}/9 (${kpDesc})
+Tonight&apos;s Clear Sky: ${clearSky.toFixed(0)}%
+Best Viewing: 6 PM - 6 AM
 
-${APP_NAME} · 退订: ${unsubscribeUrl}`;
+${APP_NAME} · Unsubscribe: ${unsubscribeUrl}`;
 
   await sendEmail({ to, subject, html, text });
 }
@@ -154,11 +154,11 @@ export async function sendVerificationEmail(
 <body>
   <div class="container">
     <div class="card">
-      <div class="title">🌌 确认订阅 pingAurora</div>
-      <div class="subtitle">点击下方按钮确认订阅 ${locationName} 的极光通知</div>
-      <a href="${verifyUrl}" class="cta-btn">确认订阅</a>
+      <div class="title">🌌 Confirm Your pingAurora Subscription</div>
+      <div class="subtitle">Click the button below to confirm aurora alerts for ${locationName}</div>
+      <a href="${verifyUrl}" class="cta-btn">Confirm Subscription</a>
     </div>
-    <div class="footer">如果不是你本人操作，请忽略此邮件。</div>
+    <div class="footer">If this wasn&apos;t you, please ignore this email.</div>
   </div>
 </body>
 </html>
@@ -166,16 +166,16 @@ export async function sendVerificationEmail(
 
   await sendEmail({
     to,
-    subject: `🌌 确认订阅 pingAurora · ${locationName}`,
+    subject: `🌌 Confirm Your pingAurora Subscription · ${locationName}`,
     html,
-    text: `确认订阅 pingAurora (${locationName}) 的极光通知: ${verifyUrl}\n\n如果不是你本人操作，请忽略此邮件。`,
+    text: `Confirm your pingAurora subscription (${locationName}) aurora alerts: ${verifyUrl}\n\nIf this wasn&apos;t you, please ignore this email.`,
   });
 }
 
 function getKpLevel(kp: number): string {
-  if (kp < 3) return "微弱";
-  if (kp < 5) return "较弱";
-  if (kp < 7) return "中等";
-  if (kp < 8) return "较强";
-  return "极强";
+  if (kp < 3) return "Very Low";
+  if (kp < 5) return "Low";
+  if (kp < 7) return "Moderate";
+  if (kp < 8) return "High";
+  return "Very High";
 }

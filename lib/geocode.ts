@@ -1,7 +1,7 @@
 /**
- * Google Geocoding API 集成模块
- * 使用 Google Maps Geocoding API 将地址转换为经纬度坐标
- * API 文档: https://developers.google.com/maps/documentation/geocoding/overview
+ * Google Geocoding API Integration Module
+ * Uses Google Maps Geocoding API to convert addresses to lat/lng coordinates
+ * API docs: https://developers.google.com/maps/documentation/geocoding/overview
  */
 
 export interface GeocodingResult {
@@ -20,8 +20,8 @@ export interface GeocodingError {
 const GOOGLE_GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json";
 
 /**
- * 调用 Google Geocoding API 获取地址的经纬度
- * @param address 地址字符串（如 "Beijing, China" 或 "北京市"）
+ * Call Google Geocoding API to get lat/lng for an address
+ * @param address Address string (e.g. "New York, USA" or "Los Angeles")
  * @param apiKey Google Maps API Key
  */
 export async function geocodeAddress(
@@ -29,47 +29,47 @@ export async function geocodeAddress(
   apiKey: string
 ): Promise<GeocodingResult> {
   if (!address.trim()) {
-    throw new Error("地址不能为空");
+    throw new Error("Address cannot be empty");
   }
 
   if (!apiKey) {
-    throw new Error("Google Maps API Key 未配置");
+    throw new Error("Google Maps API Key not configured");
   }
 
   const params = new URLSearchParams({
     address: address,
     key: apiKey,
-    language: "zh-CN",
+    language: "en",
   });
 
   const url = `${GOOGLE_GEOCODE_URL}?${params.toString()}`;
 
   const res = await fetch(url, {
-    next: { revalidate: 3600 }, // 缓存 1 小时，地址坐标变化不频繁
+    next: { revalidate: 3600 }, // Cache 1 hour, coordinates don't change often
   });
 
   if (!res.ok) {
-    throw new Error(`Geocoding API 请求失败: ${res.status}`);
+    throw new Error(`Geocoding API request failed: ${res.status}`);
   }
 
   const data = await res.json();
 
   if (data.status !== "OK" || !data.results || data.results.length === 0) {
     const errorMessages: Record<string, string> = {
-      ZERO_RESULTS: "未找到该地址，请尝试更详细的描述",
-      OVER_QUERY_LIMIT: "API 请求次数超限，请稍后重试",
-      REQUEST_DENIED: "API 请求被拒绝，请检查 API Key 是否正确",
-      INVALID_REQUEST: "地址格式无效",
-      UNKNOWN_ERROR: "Google 服务器错误，请稍后重试",
+      ZERO_RESULTS: "Location not found, try a more detailed description",
+      OVER_QUERY_LIMIT: "API rate limit exceeded, please try again later",
+      REQUEST_DENIED: "API request denied, check your API Key",
+      INVALID_REQUEST: "Invalid address format",
+      UNKNOWN_ERROR: "Google server error, please try again later",
     };
-    throw new Error(errorMessages[data.status] || `地理编码失败: ${data.status}`);
+    throw new Error(errorMessages[data.status] || `Geocoding failed: ${data.status}`);
   }
 
   const firstResult = data.results[0];
   const location = firstResult.geometry.location;
   const { lat, lng } = location;
 
-  // 提取国家
+  // Extract country
   let country = "";
   let city = "";
 
@@ -85,7 +85,7 @@ export async function geocodeAddress(
     }
   }
 
-  // 优先使用城市名，其次使用地址的第一个部分
+  // Prefer city name, fallback to first part of address
   const locationName = city || firstResult.address_components[0]?.long_name || address;
 
   return {
@@ -99,7 +99,7 @@ export async function geocodeAddress(
 }
 
 /**
- * 验证经纬度坐标是否有效
+ * Validate lat/lng coordinates
  */
 export function isValidCoordinates(lat: number, lng: number): boolean {
   return (
@@ -115,7 +115,7 @@ export function isValidCoordinates(lat: number, lng: number): boolean {
 }
 
 /**
- * 判断坐标是否在中国境内（用于提示极光可见性）
+ * Check if coordinates are in China (for aurora visibility hints)
  */
 export function isInChina(lat: number, lng: number): boolean {
   return lat >= 18 && lat <= 54 && lng >= 73 && lng <= 135;

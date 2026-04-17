@@ -1,6 +1,6 @@
 /**
- * NOAA SWPC 行星 K 指数获取模块
- * 数据源: https://services.swpc.noaa.gov/json/planetary_k_index_1m.json
+ * NOAA SWPC Planetary K Index Module
+ * Data source: https://services.swpc.noaa.gov/json/planetary_k_index_1m.json
  */
 
 export interface KpDataPoint {
@@ -20,7 +20,7 @@ const NOAA_KP_URL =
   "https://services.swpc.noaa.gov/json/planetary_k_index_1m.json";
 
 /**
- * 获取 NOAA KP 指数原始数据
+ * Fetch raw NOAA KP index data
  */
 export async function fetchKpData(): Promise<KpDataPoint[]> {
   const res = await fetch(NOAA_KP_URL, {
@@ -46,7 +46,7 @@ export async function fetchKpData(): Promise<KpDataPoint[]> {
 }
 
 /**
- * 获取当前 KP 值（取最近 3 条数据平均值，更稳定）
+ * Get current KP value (average of last 3 readings for stability)
  */
 export async function getCurrentKp(): Promise<KpResult> {
   const rawData = await fetchKpData();
@@ -62,18 +62,18 @@ export async function getCurrentKp(): Promise<KpResult> {
 }
 
 /**
- * 计算 KP 等级描述
+ * Calculate KP level description
  */
 export function getKpLevel(kp: number): string {
-  if (kp < 3) return "微弱";
-  if (kp < 5) return "较弱";
-  if (kp < 7) return "中等";
-  if (kp < 8) return "较强";
-  return "极强";
+  if (kp < 3) return "Very Low";
+  if (kp < 5) return "Low";
+  if (kp < 7) return "Moderate";
+  if (kp < 8) return "High";
+  return "Very High";
 }
 
 /**
- * 判断 KP 是否适合观看
+ * Check if KP is watchable
  */
 export function isKpWatchable(kp: number, threshold = 6): boolean {
   return kp >= threshold;

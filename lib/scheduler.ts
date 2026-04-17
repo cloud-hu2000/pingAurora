@@ -1,6 +1,6 @@
 /**
- * 极光检查定时任务核心逻辑
- * 由 /api/check 或 Vercel Cron 调用
+ * Aurora check scheduler core logic
+ * Called by /api/check or Vercel Cron
  */
 
 import prisma from "./prisma";
@@ -21,7 +21,7 @@ export interface CheckResult {
 }
 
 /**
- * 执行一次完整的极光检查与通知
+ * Run a full aurora check and notification cycle
  */
 export async function checkAndNotify(): Promise<CheckResult> {
   const result: CheckResult = {
@@ -34,7 +34,7 @@ export async function checkAndNotify(): Promise<CheckResult> {
   };
 
   try {
-    // 1. 获取当前 KP 值
+    // 1. Fetch current KP
     let currentKp = 0;
     try {
       const kpResult = await getCurrentKp();
@@ -45,13 +45,13 @@ export async function checkAndNotify(): Promise<CheckResult> {
     }
     result.currentKp = currentKp;
 
-    // 2. 获取所有活跃订阅者
+    // 2. Fetch all active subscribers
     const subscribers = await prisma.subscriber.findMany({
       where: { isActive: true },
     });
     result.subscribersChecked = subscribers.length;
 
-    // 3. 逐个检查并通知
+    // 3. Check each subscriber and send notification
     for (const sub of subscribers) {
       try {
         const notified = await notifySubscriber(sub, currentKp);
@@ -70,8 +70,8 @@ export async function checkAndNotify(): Promise<CheckResult> {
 }
 
 /**
- * 检查并通知单个订阅者
- * @returns 是否发送了通知
+ * Check and notify a single subscriber
+ * @returns whether a notification was sent
  */
 async function notifySubscriber(
   sub: {
@@ -87,10 +87,10 @@ async function notifySubscriber(
   },
   currentKp: number
 ): Promise<boolean> {
-  // 3. KP 达标？
+  // 3. KP threshold met?
   if (currentKp < sub.kpThreshold) return false;
 
-  // 4. 取今晚晴朗度
+  // 4. Tonight's clear sky
   let tonightClearSky = 0;
   try {
     tonightClearSky = await getTonightClearSky(sub.latitude, sub.longitude);
@@ -99,10 +99,10 @@ async function notifySubscriber(
     return false;
   }
 
-  // 5. 晴朗度达标？
+  // 5. Clear sky threshold met?
   if (tonightClearSky < sub.clearSkyMin) return false;
 
-  // 6. 6小时内发过？防重复
+  // 6. Sent in last 6 hours? Deduplicate
   const recentAlert = await prisma.alertLog.findFirst({
     where: {
       subscriberId: sub.id,
@@ -113,7 +113,7 @@ async function notifySubscriber(
   });
   if (recentAlert) return false;
 
-  // 7. 发送通知
+  // 7. Send notification
   const channel = sub.telegramId ? "telegram" : "email";
 
   try {
@@ -150,7 +150,7 @@ async function notifySubscriber(
     return false;
   }
 
-  // 记录日志
+  // Log
   await prisma.alertLog.create({
     data: {
       subscriberId: sub.id,
@@ -165,7 +165,7 @@ async function notifySubscriber(
 }
 
 /**
- * 获取全局状态（供前端展示）
+ * Get global status (for frontend display)
  */
 export async function getGlobalStatus() {
   try {
@@ -184,7 +184,7 @@ export async function getGlobalStatus() {
   } catch (e) {
     return {
       currentKp: 0,
-      kpLevel: "未知",
+      kpLevel: "Unknown",
       isWatchable: false,
       totalSubscribers: 0,
       fetchedAt: new Date(),
@@ -194,9 +194,9 @@ export async function getGlobalStatus() {
 }
 
 function getKpLevel(kp: number): string {
-  if (kp < 3) return "微弱";
-  if (kp < 5) return "较弱";
-  if (kp < 7) return "中等";
-  if (kp < 8) return "较强";
-  return "极强";
+  if (kp < 3) return "Very Low";
+  if (kp < 5) return "Low";
+  if (kp < 7) return "Moderate";
+  if (kp < 8) return "High";
+  return "Very High";
 }

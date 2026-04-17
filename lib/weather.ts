@@ -1,7 +1,7 @@
 /**
- * Open-Meteo 晴朗天空预报模块
- * 数据源: https://api.open-meteo.com/v1/forecast
- * 无需 API Key，免费无限调用
+ * Open-Meteo Clear Sky Forecast Module
+ * Data source: https://api.open-meteo.com/v1/forecast
+ * No API key required, free unlimited calls
  */
 
 export interface HourlyForecast {
@@ -20,9 +20,9 @@ export interface WeatherResult {
 const OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast";
 
 /**
- * 获取某地的云量预报
- * @param lat 纬度
- * @param lng 经度
+ * Get cloud cover forecast for a location
+ * @param lat Latitude
+ * @param lng Longitude
  */
 export async function fetchCloudCover(
   lat: number,
@@ -70,10 +70,10 @@ export async function fetchCloudCover(
 }
 
 /**
- * 获取今晚（18:00-06:00）的晴朗度
- * @param lat 纬度
- * @param lng 经度
- * @returns 最高晴朗度百分比
+ * Get tonight's (6PM-6AM) clear sky percentage
+ * @param lat Latitude
+ * @param lng Longitude
+ * @returns Maximum clear sky percentage
  */
 export async function getTonightClearSky(
   lat: number,
@@ -95,12 +95,12 @@ export async function getTonightClearSky(
 }
 
 /**
- * 获取给定时间段的晴朗度
- * @param lat 纬度
- * @param lng 经度
- * @param startHour 开始小时（含）
- * @param endHour 结束小时（含）
- * @param daysAhead 从今天起第几天
+ * Get clear sky percentage for a given time range
+ * @param lat Latitude
+ * @param lng Longitude
+ * @param startHour Start hour (inclusive)
+ * @param endHour End hour (inclusive)
+ * @param daysAhead Days ahead from today
  */
 export async function getClearSkyInRange(
   lat: number,
@@ -130,7 +130,7 @@ export async function getClearSkyInRange(
 }
 
 /**
- * 晴朗度判断
+ * Clear sky check
  */
 export function isSkyClear(clearSky: number, threshold = 70): boolean {
   return clearSky >= threshold;

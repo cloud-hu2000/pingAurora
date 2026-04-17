@@ -1,5 +1,5 @@
 /**
- * POST /api/webhook/telegram - Telegram Bot Webhook 端点
+ * POST /api/webhook/telegram - Telegram Bot Webhook Endpoint
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -28,20 +28,20 @@ export async function POST(req: NextRequest) {
     if (text === "/start" || text === "/help") {
       await sendTelegramMessage(
         chat.id,
-        `🌌 欢迎使用 pingAurora！
+        `🌌 Welcome to pingAurora!
 
-发送你的城市名称即可订阅极光通知。
-例如: 北京、上海、深圳、东京、纽约
+Send your city name to subscribe to aurora alerts.
+Example: New York, Los Angeles, Seattle, London, Tokyo
 
-/subscribe 订阅
-/unsubscribe 退订
-/status 查看当前极光活跃度`
+/subscribe to subscribe
+/unsubscribe to unsubscribe
+/status check current aurora activity`
       );
       return NextResponse.json({ ok: true });
     }
 
     if (text === "/subscribe") {
-      await sendTelegramMessage(chat.id, "请发送你想订阅的城市名称（如：北京）");
+      await sendTelegramMessage(chat.id, "Please send the city name you want to subscribe to (e.g. New York)");
       return NextResponse.json({ ok: true });
     }
 
@@ -54,19 +54,19 @@ export async function POST(req: NextRequest) {
           where: { id: existing.id },
           data: { isActive: false },
         });
-        await sendTelegramMessage(chat.id, "已退订，极光通知已关闭。\n/subscribe 可重新订阅");
+        await sendTelegramMessage(chat.id, "Unsubscribed. Aurora notifications are now off.\n/subscribe to subscribe again");
       } else {
-        await sendTelegramMessage(chat.id, "你还没有订阅过。发送城市名开始订阅 /subscribe");
+        await sendTelegramMessage(chat.id, "You haven't subscribed yet. Send a city name to subscribe /subscribe");
       }
       return NextResponse.json({ ok: true });
     }
 
     if (text === "/status") {
-      await sendTelegramMessage(chat.id, "正在获取当前极光状态...");
+      await sendTelegramMessage(chat.id, "Fetching current aurora status...");
       return NextResponse.json({ ok: true });
     }
 
-    // 城市订阅逻辑
+    // City subscription logic
     const cityResult = await handleCitySubscription(chat, text);
     await sendTelegramMessage(chat.id, cityResult.message);
 
@@ -82,34 +82,64 @@ async function handleCitySubscription(
   city: string
 ) {
   const cities: Record<string, { lat: number; lng: number; name: string }> = {
-    北京: { lat: 39.9042, lng: 116.4074, name: "北京" },
-    上海: { lat: 31.2304, lng: 121.4737, name: "上海" },
-    深圳: { lat: 22.5431, lng: 114.0579, name: "深圳" },
-    广州: { lat: 23.1291, lng: 113.2644, name: "广州" },
-    杭州: { lat: 30.2741, lng: 120.1551, name: "杭州" },
-    成都: { lat: 30.5728, lng: 104.0668, name: "成都" },
-    武汉: { lat: 30.5928, lng: 114.3055, name: "武汉" },
-    西安: { lat: 34.3416, lng: 108.9398, name: "西安" },
-    哈尔滨: { lat: 45.8033, lng: 126.534, name: "哈尔滨" },
-    台北: { lat: 25.033, lng: 121.5654, name: "台北" },
-    香港: { lat: 22.3193, lng: 114.1694, name: "香港" },
-    东京: { lat: 35.6762, lng: 139.6503, name: "东京" },
-    大阪: { lat: 34.6937, lng: 135.5023, name: "大阪" },
-    首尔: { lat: 37.5665, lng: 126.978, name: "首尔" },
-    新加坡: { lat: 1.3521, lng: 103.8198, name: "新加坡" },
-    纽约: { lat: 40.7128, lng: -74.006, name: "纽约" },
-    洛杉矶: { lat: 34.0522, lng: -118.2437, name: "洛杉矶" },
-    伦敦: { lat: 51.5074, lng: -0.1278, name: "伦敦" },
-    悉尼: { lat: -33.8688, lng: 151.2093, name: "悉尼" },
+    "new york": { lat: 40.7128, lng: -74.006, name: "New York" },
+    "los angeles": { lat: 34.0522, lng: -118.2437, name: "Los Angeles" },
+    seattle: { lat: 47.6062, lng: -122.3321, name: "Seattle" },
+    "san francisco": { lat: 37.7749, lng: -122.4194, name: "San Francisco" },
+    "boston": { lat: 42.3601, lng: -71.0589, name: "Boston" },
+    chicago: { lat: 41.8781, lng: -87.6298, name: "Chicago" },
+    denver: { lat: 39.7392, lng: -104.9903, name: "Denver" },
+    anchorage: { lat: 61.2181, lng: -149.9003, name: "Anchorage" },
+    fairbanks: { lat: 64.8378, lng: -147.7164, name: "Fairbanks" },
+    "minneapolis": { lat: 44.9778, lng: -93.265, name: "Minneapolis" },
+    "portland": { lat: 45.5051, lng: -122.675, name: "Portland" },
+    detroit: { lat: 42.3314, lng: -83.0458, name: "Detroit" },
+    london: { lat: 51.5074, lng: -0.1278, name: "London" },
+    paris: { lat: 48.8566, lng: 2.3522, name: "Paris" },
+    berlin: { lat: 52.52, lng: 13.405, name: "Berlin" },
+    stockholm: { lat: 59.3293, lng: 18.0686, name: "Stockholm" },
+    oslo: { lat: 59.9139, lng: 10.7522, name: "Oslo" },
+    helsinki: { lat: 60.1699, lng: 24.9384, name: "Helsinki" },
+    reykjavik: { lat: 64.1466, lng: -21.9426, name: "Reykjavik" },
+    moscow: { lat: 55.7558, lng: 37.6173, name: "Moscow" },
+    tokyo: { lat: 35.6762, lng: 139.6503, name: "Tokyo" },
+    osaka: { lat: 34.6937, lng: 135.5023, name: "Osaka" },
+    seoul: { lat: 37.5665, lng: 126.978, name: "Seoul" },
+    singapore: { lat: 1.3521, lng: 103.8198, name: "Singapore" },
+    sydney: { lat: -33.8688, lng: 151.2093, name: "Sydney" },
+    melbourne: { lat: -37.8136, lng: 144.9631, name: "Melbourne" },
+    toronto: { lat: 43.6532, lng: -79.3832, name: "Toronto" },
+    vancouver: { lat: 49.2827, lng: -123.1207, name: "Vancouver" },
+    "hong kong": { lat: 22.3193, lng: 114.1694, name: "Hong Kong" },
+    beijing: { lat: 39.9042, lng: 116.4074, name: "Beijing" },
+    shanghai: { lat: 31.2304, lng: 121.4737, name: "Shanghai" },
+    shenzhen: { lat: 22.5431, lng: 114.0579, name: "Shenzhen" },
+    guangzhou: { lat: 23.1291, lng: 113.2644, name: "Guangzhou" },
+    "hong kong": { lat: 22.3193, lng: 114.1694, name: "Hong Kong" },
+    taipei: { lat: 25.033, lng: 121.5654, name: "Taipei" },
+    "los angeles": { lat: 34.0522, lng: -118.2437, name: "Los Angeles" },
+    "new york city": { lat: 40.7128, lng: -74.006, name: "New York" },
+    // Deduplicate
   };
 
-  const resolved = Object.values(cities).find(
-    (c) => c.name === city || c.name.includes(city)
+  // Remove duplicates by lat/lng
+  const uniqueCities: Record<string, { lat: number; lng: number; name: string }> = {};
+  for (const key of Object.keys(cities)) {
+    const c = cities[key];
+    const latKey = `${c.lat},${c.lng}`;
+    if (!uniqueCities[latKey]) {
+      uniqueCities[latKey] = c;
+    }
+  }
+
+  const resolved = Object.values(uniqueCities).find(
+    (c) => c.name.toLowerCase() === city || c.name.toLowerCase().includes(city)
   );
 
   if (!resolved) {
+    const supportedCities = Object.values(uniqueCities).map((c) => c.name).sort().join(", ");
     return {
-      message: `暂不支持 "${city}"，目前支持的城市有：北京、上海、深圳、广州、杭州、成都、武汉、西安、哈尔滨、台北、香港、东京、大阪、首尔、新加坡、纽约、洛杉矶、伦敦、悉尼等。发送其他城市名试试？`,
+      message: `"${city}" is not supported yet. Supported cities: ${supportedCities}. Try sending another city name?`,
     };
   }
 
@@ -118,7 +148,7 @@ async function handleCitySubscription(
   });
   if (existing) {
     return {
-      message: `你已订阅 ${existing.locationName}。\n/subscribe 切换城市\n/unsubscribe 退订`,
+      message: `You are already subscribed to ${existing.locationName}.\n/subscribe to change city\n/unsubscribe to unsubscribe`,
     };
   }
 
@@ -141,15 +171,15 @@ async function handleCitySubscription(
   });
 
   return {
-    message: `🌌 订阅成功！
+    message: `🌌 Subscribed!
 
 📍 ${resolved.name}
-极光活跃度阈值: 6/9
-晴朗度阈值: 70%
+Aurora Activity Threshold: 6/9
+Clear Sky Threshold: 70%
 
-今晚有机会时，我会第一时间通知你 🚀
+We&apos;ll notify you when conditions are right 🚀
 
-/unsubscribe 退订`,
+/unsubscribe to unsubscribe`,
   };
 }
 

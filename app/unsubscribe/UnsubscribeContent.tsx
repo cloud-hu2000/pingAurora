@@ -13,7 +13,7 @@ function UnsubscribeContent() {
   useEffect(() => {
     if (!token) {
       setLoading(false);
-      setResult({ success: false, message: "缺少退订凭证" });
+      setResult({ success: false, message: "Unsubscribe token missing" });
       return;
     }
 
@@ -25,7 +25,7 @@ function UnsubscribeContent() {
       })
       .catch(() => {
         setLoading(false);
-        setResult({ success: false, message: "退订失败，请重试" });
+        setResult({ success: false, message: "Unsubscribe failed, please try again" });
       });
   }, [token]);
 
@@ -37,7 +37,7 @@ function UnsubscribeContent() {
 
         {loading && (
           <div className="bg-aurora-deep border border-aurora-glow rounded-2xl p-8">
-            <p className="text-aurora-soft">正在处理退订...</p>
+            <p className="text-aurora-soft">Processing unsubscribe...</p>
           </div>
         )}
 
@@ -46,16 +46,16 @@ function UnsubscribeContent() {
             {result.success ? (
               <>
                 <span className="text-4xl block mb-4">🔕</span>
-                <p className="text-aurora-text font-semibold mb-2">已退订</p>
+                <p className="text-aurora-text font-semibold mb-2">Unsubscribed</p>
                 <p className="text-aurora-soft text-sm mb-6">{result.message}</p>
                 <p className="text-aurora-soft text-xs opacity-50">
-                  想重新订阅？<Link href="/subscribe" className="text-aurora-accent hover:underline">立即订阅</Link>
+                  Want to subscribe again? <Link href="/subscribe" className="text-aurora-accent hover:underline">Subscribe Now</Link>
                 </p>
               </>
             ) : (
               <>
                 <span className="text-4xl block mb-4">❌</span>
-                <p className="text-red-400 font-semibold mb-2">退订失败</p>
+                <p className="text-red-400 font-semibold mb-2">Unsubscribe Failed</p>
                 <p className="text-aurora-soft text-sm">{result.message}</p>
               </>
             )}

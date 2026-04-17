@@ -1,6 +1,6 @@
 /**
- * POST /api/subscribe - 订阅极光通知
- * 支持邮件订阅或Telegram订阅
+ * POST /api/subscribe - Subscribe to aurora alerts
+ * Supports email or Telegram subscription
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -19,25 +19,25 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { email, telegramId, latitude, longitude, locationName, kpThreshold = 6, clearSkyMin = 70 } = body;
 
-    // 优先使用传入的经纬度（来自前端 Google Geocoding）
+    // Prefer passed coordinates (from frontend Google Geocoding)
     if (!latitude || !longitude || !locationName) {
-      return NextResponse.json({ error: "缺少地区坐标信息，请重新选择" }, { status: 400 });
+      return NextResponse.json({ error: "Location coordinates missing, please reselect" }, { status: 400 });
     }
 
     if (!isValidCoordinates(Number(latitude), Number(longitude))) {
-      return NextResponse.json({ error: "坐标无效" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid coordinates" }, { status: 400 });
     }
 
     const verifyToken = generateToken();
     const unsubscribeToken = generateToken();
 
-    // 检查是否已存在（邮件或Telegram）
+    // Check if already subscribed (email or Telegram)
     if (email) {
       const existing = await prisma.subscriber.findFirst({
         where: { email, isActive: true },
       });
       if (existing) {
-        return NextResponse.json({ error: "该邮箱已订阅" }, { status: 409 });
+        return NextResponse.json({ error: "This email is already subscribed" }, { status: 409 });
       }
     }
     if (telegramId) {
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
         where: { telegramId, isActive: true },
       });
       if (existing) {
-        return NextResponse.json({ error: "该 Telegram 已订阅" }, { status: 409 });
+        return NextResponse.json({ error: "This Telegram account is already subscribed" }, { status: 409 });
       }
     }
 
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // 发送验证/欢迎
+    // Send verification / welcome
     if (email) {
       try {
         await sendVerificationEmail(email, verifyToken, locationName);
@@ -84,14 +84,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       message: email
-        ? "订阅成功！请查收验证邮件完成激活。"
+        ? "Subscribed! Check your email to activate."
         : telegramId
-        ? "订阅成功！Telegram 通知已开启。"
-        : "订阅成功",
+        ? "Subscribed! Telegram notifications are now active."
+        : "Subscribed",
       subscriberId: subscriber.id,
     });
   } catch (e) {
     console.error("Subscribe error:", e);
-    return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
+    return NextResponse.json({ error: "Server error, please try again" }, { status: 500 });
   }
 }
