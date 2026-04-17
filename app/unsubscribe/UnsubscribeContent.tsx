@@ -49,7 +49,7 @@ function UnsubscribeContent() {
                 <p className="text-aurora-text font-semibold mb-2">Unsubscribed</p>
                 <p className="text-aurora-soft text-sm mb-6">{result.message}</p>
                 <p className="text-aurora-soft text-xs opacity-50">
-                  Want to subscribe again? <Link href="/subscribe" className="text-aurora-accent hover:underline">Subscribe Now</Link>
+                  Want to subscribe again? <Link href="/" className="text-aurora-accent hover:underline">Subscribe Now</Link>
                 </p>
               </>
             ) : (
