@@ -107,6 +107,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="google-site-verification" content="2ytgVV96xpcr63E9bZFV9gvIZK4Sj4ZXmfZOOukKEew" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
