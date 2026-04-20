@@ -92,7 +92,9 @@ export default async function HomePage() {
 
         {/* Logo */}
         <div className="mb-6 animate-float">
-          <span className="text-6xl">🌌</span>
+          <span role="img" aria-label="pingAurora logo" className="text-6xl">
+            🌌
+          </span>
         </div>
 
         {/* H1 - SEO Optimized */}
