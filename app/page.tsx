@@ -1,6 +1,9 @@
 import { getGlobalStatus } from "@/lib/scheduler";
 import StatusBanner from "@/components/StatusBanner";
 import SubscribeForm from "@/components/SubscribeForm";
+import BlogCard from "@/components/BlogCard";
+import { getAllPosts } from "@/lib/blog";
+import Link from "next/link";
 
 export const revalidate = 60;
 
@@ -61,6 +64,8 @@ export default async function HomePage() {
     High: "#f97316",
     "Very High": "#ef4444",
   };
+
+  const recentPosts = getAllPosts().slice(0, 3);
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
@@ -125,6 +130,31 @@ export default async function HomePage() {
         <p className="mt-8 text-aurora-soft text-xs opacity-60">
           {status.totalSubscribers.toLocaleString()} subscribers worldwide
         </p>
+
+        {/* Blog Section */}
+        <div className="mt-16 pt-10 border-t border-aurora-glow/30 text-left w-full">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="text-xl font-semibold text-aurora-text">
+                From the Aurora Blog
+              </h2>
+              <p className="text-aurora-soft/60 text-sm mt-1">
+                Aurora science, tips, and behind-the-product stories
+              </p>
+            </div>
+            <Link
+              href="/blog"
+              className="text-aurora-accent/70 text-xs hover:text-aurora-accent transition-colors whitespace-nowrap ml-4 shrink-0"
+            >
+              View all →
+            </Link>
+          </div>
+          <div className="space-y-3">
+            {recentPosts.map((post) => (
+              <BlogCard key={post.slug} post={post} />
+            ))}
+          </div>
+        </div>
 
         {/* FAQ Section */}
         <div className="mt-16 pt-10 border-t border-aurora-glow/30 text-left w-full">
